@@ -1,0 +1,12 @@
+#################################################################
+## Input_boolean
+#################################################################
+
+  ramshome:
+    name: Rams Home
+    initial: on
+    icon: mdi:cellphone-iphone
+  sreehome:
+    name: Sree Home
+    initial: on
+    icon: mdi:cellphone-iphone

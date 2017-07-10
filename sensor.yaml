@@ -1,0 +1,101 @@
+#Forecast.io weather sensors
+  - platform: darksky
+    api_key: !secret darksky_key
+    monitored_conditions:
+      - wind_speed
+      - cloud_cover
+      - hourly_summary
+      - daily_summary
+    
+  - platform: wunderground
+    api_key: !secret wunderground_key
+    update_inverval:
+      days: 0
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
+    monitored_conditions:
+      - weather
+      - temp_f
+      - wind_string
+      - relative_humidity
+      - alerts
+
+#Time and Date Sensor
+  - platform: time_date
+    display_options:
+      - 'time_date'
+      - 'time_utc'
+
+  - platform: worldclock
+    time_zone: America/New_York
+    name : New York
+
+  - platform: worldclock
+    time_zone: Asia/Kolkata
+    name : New Delhi
+
+  # - platform: command_line
+  #   name: "HASS Uptime"
+  #   command: echo "$(($(date +%s) - $(date -d "$(head -n1 /home/homeassistant/.homeassistant/home-assistant.log | cut -d' ' -f-2)" +%s)))"
+  #   scan_interval: 720
+  #   value_template: >-
+  #     {% set uptime = value | int %}
+  #     {% set seconds = uptime % 60 %}
+  #     {% set minutes = ((uptime % 3600) / 60) | int %}
+  #     {% set hours = ((uptime % 86400) / 3600) | int %}
+  #     {% set days = (uptime / 86400) | int %}
+  #     {%- if days > 0 -%}
+  #       {%- if days == 1 -%}
+  #         1 day
+  #       {%- else -%}
+  #         {{ days }} days
+  #       {%- endif -%}
+  #       {{ ', ' }}
+  #     {%- endif -%}
+  #     {{ '%02d' % hours }}:{{ '%02d' % minutes }}
+  
+  - platform: template
+    sensors:
+      ha_uptime_sec:
+        friendly_name: 'HASS Uptime'
+        unit_of_measurement: 'sec'
+        value_template: >
+          {{ (as_timestamp(now()) - as_timestamp(states.input_boolean.ha_uptime.last_changed)) | round(0) }}
+        entity_id: sensor.time
+        
+  - platform: speedtest
+    hour:
+      - 12
+    monitored_conditions:
+      - download
+
+  - platform: history_stats
+    name: Total TV Time
+    entity_id: media_player.samsung_tv
+    scan_interval: 600
+    state: 'on'
+    type: time
+    start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+    end: '{{ now() }}'
+
+  - platform: rest
+    scan_interval: 86400
+    resource: http://ip.jsontest.com
+    name: External IP
+    value_template: '{{ value_json.ip }}'
+
+  - platform: yr
+  - platform: cpuspeed
+
+  - platform: yahoo_finance
+    name: Stock Symbols
+    symbols:
+      - AAPL
+      - EBAY
+
+  - platform: fixer
+    name: USD INR
+    scan_interval: 86400
+    target: INR
